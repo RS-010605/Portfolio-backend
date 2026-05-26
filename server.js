@@ -8,10 +8,10 @@ dotenv.config();
 const app = express();
 
 app.use(cors({
-  origin: "https://portfolio-three-bice-3npi4lco6v.vercel.app",
+  origin: "*",
   methods: ["GET", "POST"],
-  credentials: true
 }));
+
 app.use(express.json());
 
 mongoose.connect(process.env.MONGODB_URI)
@@ -32,29 +32,34 @@ const ContactSchema = new mongoose.Schema({
 
 const Contact = mongoose.model('Contact', ContactSchema);
 
+app.get('/', (req, res) => {
+  res.send('Backend Running');
+});
+
 app.post('/api/contact', async (req, res) => {
+
   try {
+
     const newMessage = new Contact(req.body);
 
     await newMessage.save();
 
-    res.json({
+    return res.status(200).json({
       success: true,
       message: 'Message Sent Successfully',
     });
 
   } catch (error) {
-    console.log(error);
 
-    res.status(500).json({
+    console.error(error);
+
+    return res.status(500).json({
       success: false,
-      message: 'Server Error',
+      error: error.message,
     });
-  }
-});
 
-app.get('/', (req, res) => {
-  res.send('Backend Running');
+  }
+
 });
 
 export default app;
