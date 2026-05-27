@@ -36,7 +36,7 @@ app.get('/', (req, res) => {
   res.send('Backend Running');
 });
 
-app.post('/api/contact', async (req, res) => {
+app.post('/', async (req, res) => {
 
   try {
 
