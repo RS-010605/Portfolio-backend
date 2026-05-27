@@ -7,21 +7,20 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors({
-  origin: "*",
-  methods: ["GET", "POST"],
-}));
-
+app.use(cors());
 app.use(express.json());
 
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => {
-    console.log('MongoDB Connected Successfully');
-  })
-  .catch((err) => {
-    console.log('MongoDB Connection Error:');
-    console.log(err);
-  });
+try {
+
+  await mongoose.connect(process.env.MONGODB_URI);
+
+  console.log("MongoDB Connected Successfully");
+
+} catch (error) {
+
+  console.log(error);
+
+}
 
 const ContactSchema = new mongoose.Schema({
   name: String,
@@ -41,22 +40,8 @@ app.get('/', (req, res) => {
   res.send('Backend Running');
 });
 
-app.get('/test-db', async (req, res) => {
-
-  try {
-
-    await mongoose.connection.db.admin().ping();
-
-    res.send('MongoDB Connected');
-
-  } catch (error) {
-
-    console.log(error);
-
-    res.status(500).send(error.message);
-
-  }
-
+app.get('/test-db', (req, res) => {
+  res.send('MongoDB Connected');
 });
 
 app.post('/api/contact', async (req, res) => {
@@ -74,7 +59,7 @@ app.post('/api/contact', async (req, res) => {
 
   } catch (error) {
 
-    console.error(error);
+    console.log(error);
 
     return res.status(500).json({
       success: false,
