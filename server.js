@@ -36,27 +36,46 @@ app.get('/', (req, res) => {
   res.send('Backend Running');
 });
 
-app.post('/', async (req, res) => {
+// app.post('/', async (req, res) => {
+
+//   try {
+
+//     const newMessage = new Contact(req.body);
+
+//     await newMessage.save();
+
+//     return res.status(200).json({
+//       success: true,
+//       message: 'Message Sent Successfully',
+//     });
+
+//   } catch (error) {
+
+//     console.error(error);
+
+//     return res.status(500).json({
+//       success: false,
+//       error: error.message,
+//     });
+
+//   }
+
+// });
+
+
+app.get('/test-db', async (req, res) => {
 
   try {
 
-    const newMessage = new Contact(req.body);
+    await mongoose.connection.db.admin().ping();
 
-    await newMessage.save();
-
-    return res.status(200).json({
-      success: true,
-      message: 'Message Sent Successfully',
-    });
+    res.send("MongoDB Connected");
 
   } catch (error) {
 
-    console.error(error);
+    console.log(error);
 
-    return res.status(500).json({
-      success: false,
-      error: error.message,
-    });
+    res.status(500).send(error.message);
 
   }
 
