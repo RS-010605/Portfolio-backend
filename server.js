@@ -15,8 +15,13 @@ app.use(cors({
 app.use(express.json());
 
 mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('MongoDB Connected'))
-  .catch(err => console.log(err));
+  .then(() => {
+    console.log('MongoDB Connected Successfully');
+  })
+  .catch((err) => {
+    console.log('MongoDB Connection Error:');
+    console.log(err);
+  });
 
 const ContactSchema = new mongoose.Schema({
   name: String,
@@ -36,40 +41,13 @@ app.get('/', (req, res) => {
   res.send('Backend Running');
 });
 
-// app.post('/', async (req, res) => {
-
-//   try {
-
-//     const newMessage = new Contact(req.body);
-
-//     await newMessage.save();
-
-//     return res.status(200).json({
-//       success: true,
-//       message: 'Message Sent Successfully',
-//     });
-
-//   } catch (error) {
-
-//     console.error(error);
-
-//     return res.status(500).json({
-//       success: false,
-//       error: error.message,
-//     });
-
-//   }
-
-// });
-
-
 app.get('/test-db', async (req, res) => {
 
   try {
 
     await mongoose.connection.db.admin().ping();
 
-    res.send("MongoDB Connected");
+    res.send('MongoDB Connected');
 
   } catch (error) {
 
@@ -81,4 +59,34 @@ app.get('/test-db', async (req, res) => {
 
 });
 
-export default app;
+app.post('/api/contact', async (req, res) => {
+
+  try {
+
+    const newMessage = new Contact(req.body);
+
+    await newMessage.save();
+
+    return res.status(200).json({
+      success: true,
+      message: 'Message Sent Successfully',
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+
+  }
+
+});
+
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`Server Running on Port ${PORT}`);
+});
